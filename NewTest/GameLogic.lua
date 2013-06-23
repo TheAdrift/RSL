@@ -114,12 +114,11 @@ Pointer = Fill:extend
 	fill = {0, 0, 0, 0},
 	border = { 255, 0, 0, 255 },
 	
-	onUpdate = function(self, elapsed) --[[Yet more weirdness here.
-	the.mouse tracks coordinates relative to the app window, we have to
-	translate these into coordinates for the room ourselves. Which I haven't
-	managed to do here, but I'm in the ballpark.]]
-		self.x = (the.mouse.x - (self.width/2)) + (the.view.focus.x - the.app.width/2)
-		self.y = (the.mouse.y - (self.height/2)) + (the.view.focus.y - the.app.height/2)
+	onUpdate = function(self, elapsed) --[[Weirdness resolved.
+	Subtract the.view.translate.x,.y from the relevant parameters to track
+	the mouse position relative to the current room.]]
+		self.x = (the.mouse.x - (self.width/2)) - the.view.translate.x
+		self.y = (the.mouse.y - (self.height/2)) - the.view.translate.y
 	end
 }
 
@@ -154,13 +153,9 @@ Game = View:extend
 	onNew = function (self)
 		the.player = Player:new()
 		the.pointer = Pointer:new()
-		--[[
-		the.clicker = Cursor:new ()
-		the.clicker.hotspot = {x = the.pointer.width/2, y = the.pointer.height/2}--]]
 		LoadRoom (self, 'test', 00)
-		--the.clicker:add (the.pointer)
 		self:add (the.player)
-		self:add (the.pointer)--self:add (the.clicker)
+		self:add (the.pointer)
 	end,
 
 	onUpdate = function (self, elapsed)
